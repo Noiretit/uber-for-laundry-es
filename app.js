@@ -30,7 +30,8 @@ mongoose
   });
 
 const indexRouter = require('./routes/index');
-const authRouter = require('./routes/auth');
+const authRouter = require('./routes/auth'); //IT-1
+const laundryRouter = require('./routes/laundry'); //IT-4
 
 const app = express();
 
@@ -81,7 +82,8 @@ currentUserInfo: la información del usuario de la sesión (solo disponible si h
 app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
 
 app.use('/', indexRouter);
-app.use('/', authRouter)
+app.use('/', authRouter); //IT-1
+app.use('/', laundryRouter); //IT-4
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
