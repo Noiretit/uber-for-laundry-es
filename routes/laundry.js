@@ -40,4 +40,20 @@ router.post('/launderers', (req, res, next) => {
     });
 });
 
+//IT-5
+router.get('/launderers', (req, res, next) => {
+    User.find({
+        isLaunderer: true
+    }, (err, laundererListDB) => {
+        if (err) {
+            next(err);
+            return
+        };
+
+        res.render('laundry/launderers.hbs', {
+            launderers: laundererListDB
+        })
+    })
+})
+
 module.exports = router;
