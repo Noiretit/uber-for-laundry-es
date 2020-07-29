@@ -11,6 +11,10 @@ const favicon = require('serve-favicon');
 const hbs = require('hbs');
 const mongoose = require('mongoose');
 
+
+const session = require('express-session'); //IT-2
+const MongoStore = require('connect-mongo')(session); //IT-2
+
 mongoose
   .connect('mongodb://localhost/uber-for-laundry', {
     useNewUrlParser: true,
@@ -43,6 +47,36 @@ app.use(express.urlencoded({
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(session({ //IT-2 - middleware
+  secret: "never do your own laundry again",
+  resave: true,
+  saveUninitialized: true,
+  cookie: {
+    maxAge: 60000
+  },
+  store: new MongoStore({
+    mongooseConnection: mongoose.connection,
+    ttl: 24 * 60 * 60 //1 día
+  })
+}));
+
+//IT-2: Antes de que sucedan las rutas, este middleware verifica si hay una sesión. Si hay, setea algunos locals en la respuesta para que la vista acceda. 
+//Ese middleware facilita la personalización de la homepage para los usuarios logueados. ¡Hagámoslo ahora!
+app.use((req, res, next) => {
+  /*
+  isUserLoggedIn: un booleano que indica si hay un usuario conectado o no.
+currentUserInfo: la información del usuario de la sesión (solo disponible si ha iniciado sesión).
+*/
+  if (req.session.currentUser) {
+    res.locals.currentUserInfo = req.session.currentUser;
+    res.locals.isUserLoggedIn = true;
+  } else {
+    res.locals.isUserLoggedIn = false;
+  }
+
+  next();
+});
 
 app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
 
