@@ -84,7 +84,15 @@ router.post('/launderers', (req, res, next) => {
 //RUTA CON THEN-CATCH
 router.get('/launderers', (req, res, next) => {
     User.find({
-            isLaunderer: true
+            $and: [{
+                    isLaunderer: true
+                },
+                {
+                    _id: {
+                        $ne: req.session.currentUser._id
+                    }
+                }
+            ]
         })
         .then(laundererListDB => {
             res.render('laundry/launderers.hbs', {
