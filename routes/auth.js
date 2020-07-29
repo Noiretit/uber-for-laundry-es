@@ -103,4 +103,20 @@ router.post('/login', (req, res, next) => { //IT-2
         })
 });
 
+router.get('/logout', (req, res, next) => { //IT-3
+    if (!req.session.currentUser) {
+        res.redirect('/');
+        return;
+    }
+
+    req.session.destroy((err) => {
+        if (err) {
+            next(err);
+            return;
+        }
+
+        res.redirect('/');
+    });
+});
+
 module.exports = router; //Exporta las rutas
