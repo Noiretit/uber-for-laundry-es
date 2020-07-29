@@ -1,3 +1,5 @@
+# Ignoramos todas las carpetas siguientes
+
 # Dependency directory
 
 node_modules   

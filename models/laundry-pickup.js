@@ -3,8 +3,15 @@ const Schema = mongoose.Schema;
 
 const laundryPickupSchema = new Schema({
   pickupDate: Date,
-  user: { type: Schema.Types.ObjectId, ref: 'User' },
-  launderer: { type: Schema.Types.ObjectId, ref: 'User' }
+  //type: Schema.Types.ObjectId hace referencia al modelo de usuarios
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  launderer: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  }
 });
 
 laundryPickupSchema.set('timestamps', true);
