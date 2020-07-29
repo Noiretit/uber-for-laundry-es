@@ -3,6 +3,7 @@
 const express = require('express');
 
 const User = require('../models/user'); //Requiero el modelo User
+const LaundryPickup = require('../models/laundry-pickup'); //IT-6, requiero el modelo laundry-pickup.js
 
 const router = express.Router();
 
@@ -41,7 +42,8 @@ router.post('/launderers', (req, res, next) => {
 });
 
 //IT-5
-router.get('/launderers', (req, res, next) => {
+//RUTA CON CALLBACK
+/*router.get('/launderers', (req, res, next) => {
     User.find({
         isLaunderer: true
     }, (err, laundererListDB) => {
@@ -52,8 +54,57 @@ router.get('/launderers', (req, res, next) => {
 
         res.render('laundry/launderers.hbs', {
             launderers: laundererListDB
+        });
+    });
+});*/
+//RUTA CON THEN-CATCH
+router.get('/launderers', (req, res, next) => {
+    User.find({
+            isLaunderer: true
         })
-    })
+        .then(laundererListDB => {
+            res.render('laundry/launderers.hbs', {
+                launderers: laundererListDB
+            })
+        })
+        .catch((err) => {
+            next(err);
+        })
+})
+
+//IT-6
+router.get('/launderers/:id', (req, res, next) => {
+    const laundererId = req.params.id;
+
+    User.findById(laundererId)
+        .then(theLaundererDB => {
+            res.render('laundry/launderer-profile', {
+                theLaunderer: theLaundererDB
+            })
+        })
+        .catch((err) => {
+            next(err);
+        })
+});
+
+router.post('/laundry-pickups', (req, res, next) => {
+    const pickupInfo = {
+        pickupDate: req.body.pickupDate,
+        launderer: req.body.laundererId,
+        user: req.session.currentUser._id
+    };
+
+    const thePickup = new LaundryPickup(pickupInfo);
+
+    thePickup
+        .save()
+        .then((newPickup) => {
+            res.redirect('/dashboard');
+        })
+        .catch((err) => {
+            console.log('Error while saving a pickup')
+            next(err)
+        });
 })
 
 module.exports = router;
